@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test File Upload to Public Folder</title>
+</head>
+<body>
+    <h1>Test File Upload</h1>
+    <p>This will test if files are stored in the public folder</p>
+    
+    <form id="uploadForm" enctype="multipart/form-data">
+        <div>
+            <label>Jewelry Name:</label>
+            <input type="text" name="name" value="Test Jewelry" required>
+        </div>
+        <div>
+            <label>Price:</label>
+            <input type="number" name="price" value="100" required>
+        </div>
+        <div>
+            <label>Image:</label>
+            <input type="file" name="image" accept="image/*" required>
+        </div>
+        <button type="submit">Upload to Public Folder</button>
+    </form>
+    
+    <div id="result"></div>
+    
+    <script>
+        document.getElementById('uploadForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const formData = new FormData(e.target);
+            const resultDiv = document.getElementById('result');
+            
+            try {
+                const response = await fetch('http://localhost:5000/api/jewelry', {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                const result = await response.json();
+                
+                if (response.ok) {
+                    resultDiv.innerHTML = `
+                        <h3>✅ Success!</h3>
+                        <p>File uploaded successfully!</p>
+                        <p>Image URL: <a href="http://localhost:5000${result.imageUrl}" target="_blank">${result.imageUrl}</a></p>
+                        <p>Check the public/images folder in your backend directory</p>
+                    `;
+                } else {
+                    resultDiv.innerHTML = `<h3>❌ Error:</h3><p>${result.error}</p>`;
+                }
+            } catch (error) {
+                resultDiv.innerHTML = `<h3>❌ Error:</h3><p>${error.message}</p>`;
+            }
+        });
+    </script>
+</body>
+</html>
