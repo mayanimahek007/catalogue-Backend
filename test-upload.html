@@ -33,7 +33,7 @@
             const resultDiv = document.getElementById('result');
             
             try {
-                const response = await fetch('http://localhost:5000/api/jewelry', {
+                const response = await fetch('https://catalogue-api.crystovajewels.com/api/jewelry', {
                     method: 'POST',
                     body: formData
                 });
@@ -44,7 +44,7 @@
                     resultDiv.innerHTML = `
                         <h3>✅ Success!</h3>
                         <p>File uploaded successfully!</p>
-                        <p>Image URL: <a href="http://localhost:5000${result.imageUrl}" target="_blank">${result.imageUrl}</a></p>
+                        <p>Image URL: <a href="https://catalogue-api.crystovajewels.com${result.imageUrl}" target="_blank">${result.imageUrl}</a></p>
                         <p>Check the public/images folder in your backend directory</p>
                     `;
                 } else {

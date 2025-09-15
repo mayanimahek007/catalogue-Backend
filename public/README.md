@@ -13,9 +13,9 @@ public/
 
 ## File Access URLs
 
-- Images: `http://localhost:5000/images/filename.jpg`
-- Videos: `http://localhost:5000/videos/filename.mp4`
-- General public files: `http://localhost:5000/public/path/to/file`
+- Images: `https://catalogue-api.crystovajewels.com/images/filename.jpg`
+- Videos: `https://catalogue-api.crystovajewels.com/videos/filename.mp4`
+- General public files: `https://catalogue-api.crystovajewels.com/public/path/to/file`
 
 ## File Upload Rules
 

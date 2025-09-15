@@ -2,7 +2,7 @@ import mongoose from 'mongoose';
 
 
 const jewelrySchema = new mongoose.Schema({
-  name: { type: String, required: true },
+  name: { type: String, required: false },
   categoryname: { type: String },
   category: { type: mongoose.Schema.Types.ObjectId, ref: 'Category' },
   sku: { type: String },
