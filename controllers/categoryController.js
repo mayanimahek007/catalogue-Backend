@@ -1,5 +1,5 @@
 import Category from '../models/Category.js';
-import { convertToWebP } from '../utils/imageProcessor.js';
+import { convertToWebP, deleteFile } from '../utils/imageProcessor.js';
 import path from 'path';
 
 export const createCategory = async (req, res) => {
@@ -95,8 +95,28 @@ export const updateCategory = async (req, res) => {
 
 export const deleteCategory = async (req, res) => {
   try {
+    // First, get the category to access its image URL
+    const category = await Category.findById(req.params.id);
+    
+    if (!category) {
+      return res.status(404).json({ message: 'Category not found' });
+    }
+    
+    // Delete the category from database
     await Category.findByIdAndDelete(req.params.id);
-    res.json({ message: 'Category deleted' });
+    
+    // Delete the associated image file if it exists
+    if (category.imageUrl) {
+      try {
+        await deleteFile(category.imageUrl);
+        console.log(`Deleted category image: ${category.imageUrl}`);
+      } catch (error) {
+        console.error(`Failed to delete category image: ${category.imageUrl}`, error);
+        // Don't fail the request if image deletion fails
+      }
+    }
+    
+    res.json({ message: 'Category deleted successfully' });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }

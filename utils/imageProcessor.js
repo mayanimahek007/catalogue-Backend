@@ -89,3 +89,50 @@ export const getImageMetadata = async (filePath) => {
     throw new Error(`Failed to get image metadata: ${error.message}`);
   }
 };
+
+/**
+ * Deletes a file from the filesystem
+ * @param {string} filePath - Path to the file to delete
+ * @returns {Promise<boolean>} - True if file was deleted successfully
+ */
+export const deleteFile = async (filePath) => {
+  try {
+    if (!filePath) return false;
+    
+    // Convert URL path to actual file path
+    const actualPath = path.join(path.resolve(), 'public', filePath);
+    
+    // Check if file exists
+    try {
+      await fs.access(actualPath);
+    } catch (error) {
+      console.log(`File does not exist: ${actualPath}`);
+      return false;
+    }
+    
+    // Delete the file
+    await fs.unlink(actualPath);
+    console.log(`Successfully deleted file: ${actualPath}`);
+    return true;
+  } catch (error) {
+    console.error(`Error deleting file ${filePath}:`, error);
+    return false;
+  }
+};
+
+/**
+ * Deletes multiple files from the filesystem
+ * @param {Array<string>} filePaths - Array of file paths to delete
+ * @returns {Promise<Array<boolean>>} - Array of deletion results
+ */
+export const deleteMultipleFiles = async (filePaths) => {
+  if (!filePaths || filePaths.length === 0) return [];
+  
+  const deletionResults = await Promise.allSettled(
+    filePaths.map(filePath => deleteFile(filePath))
+  );
+  
+  return deletionResults.map(result => 
+    result.status === 'fulfilled' ? result.value : false
+  );
+};

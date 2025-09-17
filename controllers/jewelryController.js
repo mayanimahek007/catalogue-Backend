@@ -1,6 +1,6 @@
 import Jewelry from '../models/Jewelry.js';
 import Category from '../models/Category.js';
-import { convertToWebP, isSupportedImage } from '../utils/imageProcessor.js';
+import { convertToWebP, isSupportedImage, deleteFile, deleteMultipleFiles } from '../utils/imageProcessor.js';
 import path from 'path';
 
 export const createJewelry = async (req, res) => {
@@ -157,8 +157,43 @@ export const updateJewelry = async (req, res) => {
 
 export const deleteJewelry = async (req, res) => {
   try {
+    // First, get the jewelry item to access its media URLs
+    const jewelry = await Jewelry.findById(req.params.id);
+    
+    if (!jewelry) {
+      return res.status(404).json({ message: 'Jewelry item not found' });
+    }
+    
+    // Delete the jewelry item from database
     await Jewelry.findByIdAndDelete(req.params.id);
-    res.json({ message: 'Deleted' });
+    
+    // Collect all media files to delete
+    const filesToDelete = [];
+    
+    if (jewelry.imageUrl) {
+      filesToDelete.push(jewelry.imageUrl);
+    }
+    
+    if (jewelry.videoUrl) {
+      filesToDelete.push(jewelry.videoUrl);
+    }
+    
+    if (jewelry.additionalImages && jewelry.additionalImages.length > 0) {
+      filesToDelete.push(...jewelry.additionalImages);
+    }
+    
+    // Delete all associated media files
+    if (filesToDelete.length > 0) {
+      try {
+        await deleteMultipleFiles(filesToDelete);
+        console.log(`Deleted jewelry media files: ${filesToDelete.join(', ')}`);
+      } catch (error) {
+        console.error(`Failed to delete some jewelry media files:`, error);
+        // Don't fail the request if file deletion fails
+      }
+    }
+    
+    res.json({ message: 'Jewelry item deleted successfully' });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
