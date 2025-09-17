@@ -45,7 +45,6 @@ export const createJewelry = async (req, res) => {
       categoryname: categoryname,
       category: data.category, // This should be the ObjectId of the category
       sku: data.sku,
-      price: data.price,
       imageUrl: imageUrl,
       videoUrl: videoUrl
     });
@@ -136,7 +135,6 @@ export const updateJewelry = async (req, res) => {
       categoryname: categoryname,
       category: data.category, // This should be the ObjectId of the category
       sku: data.sku,
-      price: data.price,
     };
     
     // Only update media if new media was uploaded
