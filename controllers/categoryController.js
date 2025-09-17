@@ -1,11 +1,31 @@
 import Category from '../models/Category.js';
+import { convertToWebP } from '../utils/imageProcessor.js';
+import path from 'path';
 
 export const createCategory = async (req, res) => {
   try {
     const data = req.body;
     if (req.file) {
-      data.imageUrl = '/images/' + req.file.filename;
+      // Convert image to WebP format
+      const originalPath = req.file.path;
+      const outputDir = path.dirname(originalPath);
+      
+      try {
+        const webpPath = await convertToWebP(originalPath, outputDir, {
+          quality: 85,
+          effort: 4
+        });
+        
+        // Update imageUrl to point to WebP file
+        const webpFilename = path.basename(webpPath);
+        data.imageUrl = '/images/' + webpFilename;
+      } catch (conversionError) {
+        console.error('WebP conversion failed:', conversionError);
+        // Fallback to original file if conversion fails
+        data.imageUrl = '/images/' + req.file.filename;
+      }
     }
+    
     const category = new Category({
       name: data.name,
       imageUrl: data.imageUrl,
@@ -41,8 +61,26 @@ export const updateCategory = async (req, res) => {
   try {
     const data = req.body;
     if (req.file) {
-      data.imageUrl = '/images/' + req.file.filename;
+      // Convert image to WebP format
+      const originalPath = req.file.path;
+      const outputDir = path.dirname(originalPath);
+      
+      try {
+        const webpPath = await convertToWebP(originalPath, outputDir, {
+          quality: 85,
+          effort: 4
+        });
+        
+        // Update imageUrl to point to WebP file
+        const webpFilename = path.basename(webpPath);
+        data.imageUrl = '/images/' + webpFilename;
+      } catch (conversionError) {
+        console.error('WebP conversion failed:', conversionError);
+        // Fallback to original file if conversion fails
+        data.imageUrl = '/images/' + req.file.filename;
+      }
     }
+    
     const update = {
       name: data.name,
       description: data.description
