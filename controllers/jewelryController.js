@@ -1,5 +1,7 @@
 import Jewelry from '../models/Jewelry.js';
 import Category from '../models/Category.js';
+import { convertToWebP, isSupportedImage } from '../utils/imageProcessor.js';
+import path from 'path';
 
 export const createJewelry = async (req, res) => {
   try {
@@ -10,7 +12,22 @@ export const createJewelry = async (req, res) => {
     if (req.files) {
       // Only set one media type based on what was uploaded
       if (req.files.image && req.files.image[0]) {
-        imageUrl = '/images/' + req.files.image[0].filename;
+        const originalImagePath = req.files.image[0].path;
+        
+        // Check if it's a supported image format
+        const isImage = await isSupportedImage(originalImagePath);
+        if (isImage) {
+          // Convert to WebP and get the new path
+          const imagesDir = path.join(path.resolve(), 'public', 'images');
+          const convertedPath = await convertToWebP(originalImagePath, imagesDir);
+          
+          // Get the filename for the URL
+          const webpFilename = path.basename(convertedPath);
+          imageUrl = '/images/' + webpFilename;
+        } else {
+          // If not a supported image, use original filename
+          imageUrl = '/images/' + req.files.image[0].filename;
+        }
       } else if (req.files.video && req.files.video[0]) {
         videoUrl = '/videos/' + req.files.video[0].filename;
       }
@@ -86,7 +103,22 @@ export const updateJewelry = async (req, res) => {
     if (req.files) {
       // Only set one media type based on what was uploaded
       if (req.files.image && req.files.image[0]) {
-        imageUrl = '/images/' + req.files.image[0].filename;
+        const originalImagePath = req.files.image[0].path;
+        
+        // Check if it's a supported image format
+        const isImage = await isSupportedImage(originalImagePath);
+        if (isImage) {
+          // Convert to WebP and get the new path
+          const imagesDir = path.join(path.resolve(), 'public', 'images');
+          const convertedPath = await convertToWebP(originalImagePath, imagesDir);
+          
+          // Get the filename for the URL
+          const webpFilename = path.basename(convertedPath);
+          imageUrl = '/images/' + webpFilename;
+        } else {
+          // If not a supported image, use original filename
+          imageUrl = '/images/' + req.files.image[0].filename;
+        }
       } else if (req.files.video && req.files.video[0]) {
         videoUrl = '/videos/' + req.files.video[0].filename;
       }

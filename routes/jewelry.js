@@ -34,8 +34,8 @@ const storage = multer.diskStorage({
 // File filter for validation
 const fileFilter = (req, file, cb) => {
   if (file.fieldname === 'image') {
-    // Allow only image files
-    if (file.mimetype.startsWith('image/')) {
+    // Allow only image files (including WebP)
+    if (file.mimetype.startsWith('image/') || file.mimetype === 'image/webp') {
       cb(null, true);
     } else {
       cb(new Error('Only image files are allowed for image field'), false);
